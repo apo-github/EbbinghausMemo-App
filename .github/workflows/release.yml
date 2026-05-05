@@ -75,11 +75,13 @@ jobs:
           fi
 
       # 7. 成果物を保存
+      - name: Locate files
+        run: find . -name "*.apk"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
-          path: |
-            src-tauri/gen/android/app/build/outputs/apk/release/*.apk
-            src-tauri/gen/apple/build/Products/Release-iphoneos/*.ipa
-          if-no-files-found: error # ファイルが見つからない場合にエラーを出して場所を特定しやすくする
+          name: android-apk
+          # gen フォルダに頼らず、プロジェクト全体から .apk を探す設定
+          path: "**/*.apk"
+          if-no-files-found: error
