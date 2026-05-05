@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { invoke } from '@tauri-apps/api/core';
 
 const text = ref('');
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
@@ -42,7 +43,7 @@ const save = async () => {
     todos.unshift({ 
       id: Date.now(), 
       content: text.value, 
-      lastCompletedDay: 0 // 追加
+      lastCompletedDay: -1,
     });
     // Rustにて通知予約
     try {

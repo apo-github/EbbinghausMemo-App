@@ -1,20 +1,17 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .plugin(tauri_plugin_notification::init())
+        .invoke_handler(tauri::generate_handler![schedule_forgetting_curve_notifications])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
 
 // add myself
-use tauri_plugin_notification::NotificationExt;
+use tauri_plugin_notification::{NotificationExt, Schedule};
 
 #[tauri::command]
 fn schedule_forgetting_curve_notifications(app: tauri::AppHandle, content: String) {
@@ -26,18 +23,29 @@ fn schedule_forgetting_curve_notifications(app: tauri::AppHandle, content: Strin
     ];
 
     for (label, delay_sec) in schedules {
-        let identifier = format!("todo-{}-{}", label, uuid::Uuid::new_v4()); // 重複を避けるID
+        let id_int = (rand::random::<u32>() % 2147483647) as i32; // 重複を避けるID
         
-        // モバイルOSのスケジューラに登録
-        let _ = app.notification()
+        // 現在時刻から delay_sec 後の時刻を計算
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let target_time = now + delay_sec;
+
+        // 通知の作成とスケジュール
+       let _ = app.notification()
             .builder()
-            .id(identifier)
+            .id(id_int)
             .title(format!("復習リマインド ({})", label))
             .body(&content)
-            .schedule(tauri_plugin_notification::Schedule::After {
-                seconds: delay_sec,
+            .schedule(Schedule::At {
+                // 通知を送る特定の日時を指定
+                date: (std::time::SystemTime::UNIX_EPOCH + std::time::Duration::from_secs(target_time)).into(),
+                // 繰り返し設定（必要なければ false）
+                repeating: false,
+                // デバイスがアイドル状態（省電力モード等）でも通知するか
+                allow_while_idle: true,
             })
-            .unwrap()
             .show();
     }
 }
