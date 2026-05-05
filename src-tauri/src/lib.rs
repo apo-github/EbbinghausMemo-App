@@ -31,7 +31,7 @@ fn schedule_forgetting_curve_notifications(app: tauri::AppHandle, content: Strin
         // モバイルOSのスケジューラに登録
         let _ = app.notification()
             .builder()
-            .identifier(&identifier)
+            .id(identifier)
             .title(format!("復習リマインド ({})", label))
             .body(&content)
             .schedule(tauri_plugin_notification::Schedule::After {
