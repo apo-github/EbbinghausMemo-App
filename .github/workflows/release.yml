@@ -2,6 +2,8 @@ name: Mobile Build (Auto-Init)
 on:
   push:
     branches: [ main ] # mainにpushした時に実行
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -55,7 +57,7 @@ jobs:
       - name: tauri mobile init
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            npx tauri android init --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo"
+            npx tauri android init --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo" --i-accept-and-vow-to-keep-the-android-sdk-packages-up-to-date
           else
             npx tauri ios init --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo"
           fi
