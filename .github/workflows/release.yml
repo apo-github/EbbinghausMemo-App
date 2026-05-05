@@ -54,12 +54,14 @@ jobs:
 
       # 5. モバイルプロジェクトの初期化 (Local initの代わり)
       # ここでパッケージ名とアプリ名を指定します
+      # 5. モバイルプロジェクトの初期化 (対話入力を printf でシミュレート)
       - name: tauri mobile init
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            npx tauri android init -- --ci --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo"
+            # 1つ目の入力にパッケージ名、2つ目にアプリ名を流し込む (\n は Enter キー)
+            printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri android init
           else
-            npx tauri ios init -- --ci --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo"
+            printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri ios init
           fi
 
       # 6. ビルド実行
