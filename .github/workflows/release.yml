@@ -65,12 +65,13 @@ jobs:
           fi
 
       # 6. ビルド実行
+      # --no-bundle を削除し、npm の引数渡しとして -- を使用
       - name: tauri mobile build
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            npm run tauri android build -- --no-bundle
+            npm run tauri android build --
           else
-            npm run tauri ios build -- --no-bundle
+            npm run tauri ios build --
           fi
 
       # 7. 成果物を保存
