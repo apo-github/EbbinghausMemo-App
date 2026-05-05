@@ -1,0 +1,79 @@
+name: Mobile Build (Auto-Init)
+on:
+  push:
+    branches: [ main ] # mainにpushした時に実行
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            os: ubuntu-latest
+          - platform: ios
+            os: macos-latest
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Node.js セットアップ
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 2. Rust セットアップ
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # モバイルビルドに必要なターゲットを追加
+          targets: ${{ matrix.platform == 'android' && 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android' || 'aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim' }}
+
+      # 3. Android用JDK/SDKセットアップ (Androidのみ)
+      - name: setup Java and Android SDK
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: setup Android SDK
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+
+      # 4. 依存関係インストール
+      - name: install dependencies
+        run: npm install
+
+      # 5. モバイルプロジェクトの初期化 (Local initの代わり)
+      # ここでパッケージ名とアプリ名を指定します
+      - name: tauri mobile init
+        run: |
+          if [ "${{ matrix.platform }}" = "android" ]; then
+            npx tauri android init --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo"
+          else
+            npx tauri ios init --package-name "com.ebbinghaus.app" --app-name "EbbinghausMemo"
+          fi
+
+      # 6. ビルド実行
+      - name: tauri mobile build
+        run: |
+          if [ "${{ matrix.platform }}" = "android" ]; then
+            npm run tauri android build -- --no-bundle
+          else
+            npm run tauri ios build -- --no-bundle
+          fi
+
+      # 7. 成果物を保存
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          path: |
+            src-tauri/gen/android/app/build/outputs/apk/release/*.apk
+            src-tauri/gen/apple/build/outputs/ios/*.ipa

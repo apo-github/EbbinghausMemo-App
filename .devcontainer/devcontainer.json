@@ -1,0 +1,22 @@
+{
+  "name": "Tauri v2 Dev Environment", // ① 表示名
+  "build": {
+    "dockerfile": "Dockerfile"        // ② 使用するDockerfileの指定
+  },
+  "customizations": {                 // ③ コンテナ内専用のVS Code設定
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",    // Rustのコード補完
+        "tauri-apps.tauri-vscode",    // Tauri専用のサポートツール
+        "dbaeumer.vscode-eslint"      // JS/TSの構文チェック
+      ]
+    }
+  },
+  "remoteUser": "root",               // ④ ログインユーザー
+  "mounts": [                         // ⑤ ホストの資源をコンテナに繋ぐ
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+  ],
+  "containerEnv": {                   // ⑥ コンテナ内の環境変数
+    "DISPLAY": "${localEnv:DISPLAY}"
+  }
+}

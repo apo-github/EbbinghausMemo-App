@@ -1,0 +1,58 @@
+# Logs
+# --- Node.js / Frontend ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.env
+.env.local
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# add by me
+.devcontainer/
+
+# --- Rust / Tauri ---
+target/
+src-tauri/target/
+# Tauri v2 のモバイル用一時ファイル
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/build/
+src-tauri/gen/android/app/build/
+src-tauri/gen/apple/build/
+
+# --- Android Specific ---
+*.jks
+*.keystore
+*.apk
+*.aab
+local.properties
+
+# --- iOS Specific ---
+*.ipa
+*.xcarchive
+DerivedData/
+# iOSの署名関連（手動で管理する場合）
+*.p12
+*.mobileprovision
+
+# --- IDE / OS ---
+Thumbs.db
+*.swp
