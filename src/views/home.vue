@@ -91,5 +91,5 @@ onMounted(loadTodos);
   background: #f0f0f0; /* 押してる感のフィードバック */
 }
 .page-container { padding: 2px; padding-bottom: 80px; }
-.page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 5%;}
 </style>
