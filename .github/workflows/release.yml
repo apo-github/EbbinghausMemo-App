@@ -47,6 +47,10 @@ jobs:
         if: matrix.platform == 'android'
         uses: android-actions/setup-android@v3
 
+      - name: install NDK
+        if: matrix.platform == 'android'
+        run: sdkmanager "ndk;26.1.10909125"
+
       # 4. 依存関係インストール
       - name: install dependencies
         run: npm install
