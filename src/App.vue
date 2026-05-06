@@ -28,9 +28,9 @@
 <style scoped>
 .container {
   /* 固定の 100vh ではなく、最小高さにする */
-  min-height: 100vh;
   display: block; /* flex から変更 */
   position: relative;
+  margin-top: 10%;
 }
 
 .content {

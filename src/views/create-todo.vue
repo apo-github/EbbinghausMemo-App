@@ -102,7 +102,7 @@ const save = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 40px 20px;
   border-bottom: 1px solid #f0f0f0;
 }
 

@@ -176,7 +176,7 @@ onMounted(loadTodos);
 
 /* その他 */
 .page-container { padding: 2px; padding-bottom: 80px; }
-.page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 5%;}
+.page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .info-text { font-size: 11px; color: #999; }
 .empty-message { text-align: center; color: #999; margin-top: 50px; }
 </style>
