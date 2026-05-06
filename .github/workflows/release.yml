@@ -35,7 +35,7 @@ jobs:
         with:
           targets: ${{ matrix.platform == 'android' && 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android' || 'aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim' }}
 
-      # 3. Android用セットアップ
+      # 3. Android用セットアップ (NDKを追加)
       - name: setup Java and Android SDK
         if: matrix.platform == 'android'
         uses: actions/setup-java@v4
@@ -47,45 +47,32 @@ jobs:
         if: matrix.platform == 'android'
         uses: android-actions/setup-android@v3
 
+      # Tauri V2に必須のNDKバージョン
       - name: install NDK
         if: matrix.platform == 'android'
         run: sdkmanager "ndk;26.1.10909125"
 
-      # 4. 依存関係インストール
-      - name: install dependencies
-        run: npm install
-
-      # 5. モバイルプロジェクトの初期化
+      # 5. モバイルプロジェクトの初期化 (識別子を合わせる)
       - name: tauri mobile init
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri android init
+            # identifierはドット区切り、かつ小文字のみが安全
+            printf "com.ebbinghaus.app\nebbinghaus\n" | npx tauri android init
           else
-            printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri ios init
+            printf "com.ebbinghaus.app\nebbinghaus\n" | npx tauri ios init
           fi
-
-      # 6. Android署名鍵の準備
-      - name: Decode Android Keystore
-        if: matrix.platform == 'android'
-        run: |
-          mkdir -p src-tauri/gen/android/
-          echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 --decode > src-tauri/gen/android/release.keystore
 
       # 7. ビルド実行
       - name: tauri mobile build
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            npm run tauri android build
+            # 修正：まずは --debug で中身が詰まったAPKができるか確認
+            npm run tauri android build -- --debug
           else
-            # iOSは通常、CI上での署名にApple Developer Programの証明書が必要ですが、
-            # まずは署名なし(あるいはシミュレータ用)でビルドを試みます
             npm run tauri ios build
           fi
         env:
-          TAURI_ANDROID_KEYSTORE: "${{ github.workspace }}/src-tauri/gen/android/release.keystore"
-          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.1.10909125
 
       # 8. 成果物の保存 (プラットフォームごとに分ける)
       - name: Upload Android Artifact
