@@ -1,7 +1,7 @@
 name: Mobile Build (Auto-Init)
 on:
   push:
-    branches: [ main ]
+    branches: [ main ] # mainにpushした時に実行
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -33,9 +33,10 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
+          # モバイルビルドに必要なターゲットを追加
           targets: ${{ matrix.platform == 'android' && 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android' || 'aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim' }}
 
-      # 3. Android用セットアップ
+      # 3. Android用JDK/SDKセットアップ (Androidのみ)
       - name: setup Java and Android SDK
         if: matrix.platform == 'android'
         uses: actions/setup-java@v4
@@ -51,51 +52,37 @@ jobs:
       - name: install dependencies
         run: npm install
 
-      # 5. モバイルプロジェクトの初期化
+      # 5. モバイルプロジェクトの初期化 (Local initの代わり)
+      # ここでパッケージ名とアプリ名を指定します
+      # 5. モバイルプロジェクトの初期化 (対話入力を printf でシミュレート)
       - name: tauri mobile init
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
+            # 1つ目の入力にパッケージ名、2つ目にアプリ名を流し込む (\n は Enter キー)
             printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri android init
           else
             printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri ios init
           fi
 
-      # 6. Android署名鍵の準備
-      - name: Decode Android Keystore
-        if: matrix.platform == 'android'
-        run: |
-          mkdir -p src-tauri/gen/android/
-          echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 --decode > src-tauri/gen/android/release.keystore
-
-      # 7. ビルド実行
+      
+      # 6. ビルド実行
+      # --no-bundle を削除し、npm の引数渡しとして -- を使用
       - name: tauri mobile build
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
             npm run tauri android build -- --debug
           else
-            # iOSは通常、CI上での署名にApple Developer Programの証明書が必要ですが、
-            # まずは署名なし(あるいはシミュレータ用)でビルドを試みます
             npm run tauri ios build -- --debug
           fi
-        env:
-          TAURI_ANDROID_KEYSTORE: "${{ github.workspace }}/src-tauri/gen/android/release.keystore"
-          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      # 8. 成果物の保存 (プラットフォームごとに分ける)
-      - name: Upload Android Artifact
-        if: matrix.platform == 'android'
+      # 7. 成果物を保存
+      - name: Locate files
+        run: find . -name "*.apk"
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-release-apk
-          path: "**/build/outputs/apk/release/*.apk"
+          name: android-apk
+          # gen フォルダに頼らず、プロジェクト全体から .apk を探す設定
+          path: "**/*.apk"
           if-no-files-found: error
-
-      - name: Upload iOS Artifact
-        if: matrix.platform == 'ios'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-release-app
-          path: "src-tauri/gen/apple/build/Release-iphoneos/*.app"
-          if-no-files-found: warn
