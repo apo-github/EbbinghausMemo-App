@@ -64,15 +64,27 @@ jobs:
             printf "com.ebbinghaus.app\nEbbinghausMemo\n" | npx tauri ios init
           fi
 
+      - name: Decode Android Keystore
+        if: matrix.platform == 'android'
+        run: |
+          # 確実にディレクトリを作成してからデコード
+          mkdir -p src-tauri/gen/android/
+          echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 --decode > src-tauri/gen/android/release.keystore
+
       # 6. ビルド実行
-      # --no-bundle を削除し、npm の引数渡しとして -- を使用
       - name: tauri mobile build
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            npm run tauri android build --
+            npm run tauri android build -- --release
           else
-            npm run tauri ios build --
+            npm run tauri ios build -- --release
           fi
+        env:
+          # $GITHUB_WORKSPACE を使って絶対パスで指定する
+          TAURI_ANDROID_KEYSTORE: "${{ github.workspace }}/src-tauri/gen/android/release.keystore"
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       # 7. 成果物を保存
       - name: Locate files
