@@ -88,8 +88,9 @@ jobs:
         if: matrix.platform == 'android'
         uses: actions/upload-artifact@v4
         with:
-          name: android-release-apk
-          path: "src-tauri/gen/android/app/build/outputs/apk/release/*.apk"
+          name: android-apk
+          # gen フォルダに頼らず、プロジェクト全体から .apk を探す設定
+          path: "**/*.apk"
           if-no-files-found: error
 
       - name: Upload iOS Artifact
@@ -97,5 +98,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-release-app
-          path: "src-tauri/gen/apple/build/Release-iphoneos/*.app"
+          path: "**/*.apk"
           if-no-files-found: warn
