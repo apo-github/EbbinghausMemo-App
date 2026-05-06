@@ -31,7 +31,7 @@ const notificationTodos = computed(() => {
     })
     .filter(todo => {
       // 復習スケジュール（テスト用: 0, 本番: 1, 3, 7, 30）
-      const schedule = [1, 3, 7, 30]; 
+      const schedule = [0, 1, 3, 7, 30]; 
       
       // 【修正】チェック済みかどうかに関わらず、その日が復習日なら表示する
       // これにより「朝4時」が来るまでリストに残り続けます
@@ -114,6 +114,7 @@ onMounted(loadTodos);
   background: white;
   margin-bottom: 15px;
   padding: 15px;
+  margin: 10px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   border-left: 5px solid #007aff;
@@ -167,14 +168,14 @@ onMounted(loadTodos);
 
 /* チェックボックスの大きさ */
 .complete-checkbox {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   accent-color: #007aff;
 }
 
 /* その他 */
-.page-container { padding: 20px; padding-bottom: 80px; }
+.page-container { padding: 2px; padding-bottom: 80px; }
 .page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .info-text { font-size: 11px; color: #999; }
 .empty-message { text-align: center; color: #999; margin-top: 50px; }

@@ -71,7 +71,6 @@ onMounted(loadTodos);
 
 
 <style scoped>
-.list { padding: 15px; }
 .todo-card {
   /* 長押し時にテキスト選択されないようにする（操作感向上） */
   user-select: none;
@@ -91,6 +90,6 @@ onMounted(loadTodos);
 .todo-card:active {
   background: #f0f0f0; /* 押してる感のフィードバック */
 }
-.page-container { padding: 20px; padding-bottom: 80px; }
+.page-container { padding: 2px; padding-bottom: 80px; }
 .page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 </style>
