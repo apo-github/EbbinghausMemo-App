@@ -71,11 +71,11 @@ jobs:
       - name: tauri mobile build
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            npm run tauri android build -- --release
+            npm run tauri android build
           else
             # iOSは通常、CI上での署名にApple Developer Programの証明書が必要ですが、
             # まずは署名なし(あるいはシミュレータ用)でビルドを試みます
-            npm run tauri ios build -- --release
+            npm run tauri ios build
           fi
         env:
           TAURI_ANDROID_KEYSTORE: "${{ github.workspace }}/src-tauri/gen/android/release.keystore"
