@@ -56,10 +56,10 @@ jobs:
       - name: tauri mobile init
         run: |
           if [ "${{ matrix.platform }}" = "android" ]; then
-            # identifierはドット区切り、かつ小文字のみが安全
-            printf "com.ebbinghaus.app\nebbinghaus\n" | npx tauri android init
+            # @tauri-apps/cli を明示的に指定して実行
+            printf "com.ebbinghaus.app\nebbinghaus\n" | npx @tauri-apps/cli android init
           else
-            printf "com.ebbinghaus.app\nebbinghaus\n" | npx tauri ios init
+            printf "com.ebbinghaus.app\nebbinghaus\n" | npx @tauri-apps/cli ios init
           fi
 
       # 7. ビルド実行
