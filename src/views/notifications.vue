@@ -31,7 +31,7 @@ const notificationTodos = computed(() => {
     })
     .filter(todo => {
       // 復習スケジュール（テスト用: 0, 本番: 1, 3, 7, 30）
-      const schedule = [0, 1, 3, 7, 30]; 
+      const schedule = [1, 3, 7, 30]; 
       
       // 【修正】チェック済みかどうかに関わらず、その日が復習日なら表示する
       // これにより「朝4時」が来るまでリストに残り続けます
@@ -67,7 +67,7 @@ onMounted(loadTodos);
   <div class="page-container">
     <header class="page-header">
       <h3>今日の復習</h3>
-      <span class="info-text">朝4時にリセット</span>
+      <span class="info-text">朝4時に自動リセットされます</span>
     </header>
     
     <div v-if="notificationTodos.length === 0" class="empty-message">

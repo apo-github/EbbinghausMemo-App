@@ -47,19 +47,24 @@ onMounted(loadTodos);
 </script>
 
 <template>
-  <div class="list">
-    <div 
-      v-for="todo in todos" 
-      :key="todo.id" 
-      class="todo-card"
-      @mousedown="startPress(todo.id)"
-      @mouseup="cancelPress"
-      @mouseleave="cancelPress"
-      @touchstart="startPress(todo.id)"
-      @touchend="cancelPress"
-      @click="editTodo(todo.id)"
-    >
-      <p>{{ todo.content }}</p>
+  <div class="page-container">
+    <header class="page-header">
+        <h3>一覧</h3>
+    </header>
+    <div class="list">
+      <div 
+        v-for="todo in todos" 
+        :key="todo.id" 
+        class="todo-card"
+        @mousedown="startPress(todo.id)"
+        @mouseup="cancelPress"
+        @mouseleave="cancelPress"
+        @touchstart="startPress(todo.id)"
+        @touchend="cancelPress"
+        @click="editTodo(todo.id)"
+      >
+        <p>{{ todo.content }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -86,4 +91,6 @@ onMounted(loadTodos);
 .todo-card:active {
   background: #f0f0f0; /* 押してる感のフィードバック */
 }
+.page-container { padding: 20px; padding-bottom: 80px; }
+.page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 </style>

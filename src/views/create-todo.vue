@@ -62,23 +62,30 @@ const save = async () => {
 </script>
 
 <template>
-  <div class="full-screen-editor">
-    <header class="editor-header">
-      <button @click="router.back()" class="text-btn">キャンセル</button>
-      <h3>{{ editId ? '編集' : '新規作成' }}</h3>
-      <button @click="save" class="save-btn">完了</button>
+  <div class="page-container">
+    <header class="page-header">
+      <h3></h3>
     </header>
+    <div class="full-screen-editor">
+      <div class="editor-header">
+        <button @click="router.back()" class="text-btn">キャンセル</button>
+        <h3>{{ editId ? '編集' : '新規作成' }}</h3>
+        <button @click="save" class="save-btn">保存</button>
+      </div>
 
-    <textarea 
-      ref="textareaRef"
-      v-model="text" 
-      placeholder="内容を入力..." 
-      class="full-textarea"
-    ></textarea>
+      <textarea 
+        ref="textareaRef"
+        v-model="text" 
+        placeholder="内容を入力..." 
+        class="full-textarea"
+      ></textarea>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.page-container { padding: 20px; padding-bottom: 80px; }
+.page-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .full-screen-editor {
   position: fixed;
   top: 0;
